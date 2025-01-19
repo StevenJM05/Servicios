@@ -1,6 +1,13 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Servicios.DB;
+using Servicios.Models;
+using Servicios.Services;
+using Servicios.Utils;
+using System.Text;
 
 namespace Servicios
 {
@@ -16,8 +23,14 @@ namespace Servicios
 
             builder.Services.AddDbContext<ServiciosDBContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            
+            builder.Services.AddIdentityServices();
+            builder.Services.AddJwtServices(builder.Configuration);
+            builder.Services.AddScoped<JwtService>();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddEndpointsApiExplorer(); 
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
@@ -29,8 +42,7 @@ namespace Servicios
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
